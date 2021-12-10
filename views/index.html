@@ -1,0 +1,79 @@
+<style>
+	.result {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid #67B13D;
+		cursor: pointer;
+		border-radius: 10px;
+		/* color: white; */
+	}
+	button {
+		background-color: #67B13D;
+		padding: 5px 10px;
+		color: white;
+		border-radius: 3px;
+		border: 0;
+
+	}
+</style>
+<div class="padding">
+	<div data---="input__input" class="m">Sem vlož text, ktorý chceš rozparsovať</div>
+	<button class="exec" data-exec="parse">Rozparsuj</button>
+
+	<div style="margin-top: 30px;" data-bind="result__show">
+		<div class="m">Výsledok:</div>
+		<div style="color: red; font-weight: bold;" data-bind="error__!text"></div>
+		<div class="b result m" data-bind="result__!text"></div>
+		<div>Klikni pre skopírovanie</div>
+	</div>
+
+</div>
+
+<script>
+
+	FIND('.input', input => {
+	
+		input.dom.addEventListener("keyup", function(event) {
+			// Number 13 is the "Enter" key on the keyboard
+			if (event.keyCode === 13) {
+				// Cancel the default action, if needed
+				event.preventDefault();
+				// Trigger the button element with a click
+				document.getElementsByClassName("exec")[0].click();
+			}
+		});
+	});
+
+	$('.result').on('click', function() {
+		var el = $(this);
+
+		el.css('background-color', '#E0E0E0');
+		setTimeout(function() {
+			el.css('background-color', 'transparent');
+		}, 200);
+
+		// Copy to clipboard
+		SETTER('clipboard/copy', el.html());
+	});
+
+	function parse() {
+		
+		const input = GET('input');
+		SET('error', (input.length % 2 !== 0 ? 'Chýba pár ku jednému zo stringov!' : null));
+		let symbol = '0x';
+		let symbols = [];
+		let final_symbol = '';
+		
+		for (let x = 0; x <= input.length; x++) {
+			if (x % 2 === 0 && x !== 0) {
+				symbols.push(symbol);
+				final_symbol += symbol + ', ';
+				symbol = '0x';
+			}
+			symbol += input.charAt(x);
+		}
+
+		const res = final_symbol.substring(0, final_symbol.length -2);
+		SET('result', res);
+	}
+</script>
